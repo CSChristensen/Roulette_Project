@@ -1,7 +1,7 @@
 from typing import Optional
 from .player import Player
 from .table import Table
-from .bet import Bet
+from .bet import Bet, BetType
 from .wheel import Color
 
 
@@ -18,10 +18,17 @@ class GameController:
         print("Welcome to Roulette!")
         print("=" * 50)
         print("Game Rules:")
+        print()
+        print("COLOR BETTING:")
         print("- Red/Black bets pay 2:1 odds")
         print("- Green (0) bets pay 35:1 odds")
-        print("- You can bet on Red, Black, or Green")
-        print("- Good luck!")
+        print()
+        print("NUMBER BETTING:")
+        print("- Bet on specific numbers (0-36)")
+        print("- All number bets pay 35:1 odds")
+        print()
+        print("You can choose between color or number betting each round.")
+        print("Good luck!")
         print("=" * 50)
 
     def display_message(self, message: str) -> None:
@@ -81,6 +88,48 @@ class GameController:
             )
             return None
 
+    def validate_number_choice(self, choice: str) -> Optional[int]:
+        """Validate number choice input for number betting.
+
+        Args:
+            choice: The number choice string to validate
+
+        Returns:
+            Integer between 0-36 if valid, None otherwise.
+        """
+        if not choice:
+            self.display_message("Error: Number choice cannot be empty.")
+            return None
+
+        choice_cleaned = choice.strip()
+        if not choice_cleaned:
+            self.display_message("Error: Number choice cannot be empty.")
+            return None
+
+        try:
+            # Check for decimal points or other non-integer characters
+            if "." in choice_cleaned or "," in choice_cleaned:
+                self.display_message(
+                    "Error: Number must be a whole number (no decimals)."
+                )
+                return None
+
+            num = int(choice_cleaned)
+            
+            # Validate range (0-36 inclusive)
+            if num < 0 or num > 36:
+                self.display_message(
+                    f"Error: '{num}' is not a valid number choice. Please enter a number between 0 and 36."
+                )
+                return None
+
+            return num
+        except ValueError:
+            self.display_message(
+                f"Error: '{choice}' is not a valid number. Please enter a whole number between 0 and 36."
+            )
+            return None
+
     def validate_color_choice(self, choice: str) -> Optional[Color]:
         """Validate color choice input with case-insensitive matching.
 
@@ -111,6 +160,39 @@ class GameController:
             self.display_message(
                 "Valid options: 'red' (or 'r'), 'black' (or 'b'), 'green' (or 'g')"
             )
+            return None
+
+    def get_bet_type(self) -> Optional[BetType]:
+        """Prompt user to choose bet type and validate input.
+
+        Returns:
+            BetType enum if valid, None for invalid input.
+        """
+        self.display_message("\nChoose your bet type:")
+        self.display_message("- Color betting: Bet on Red, Black, or Green")
+        self.display_message("  • Red/Black pay 2:1 odds")
+        self.display_message("  • Green pays 35:1 odds")
+        self.display_message("- Number betting: Bet on specific numbers (0-36)")
+        self.display_message("  • All numbers pay 35:1 odds")
+        
+        bet_type_input = self.get_user_input("Enter bet type (color/number): ")
+        
+        if not bet_type_input:
+            self.display_message("Error: Bet type cannot be empty.")
+            return None
+
+        bet_type_cleaned = bet_type_input.strip().lower()
+        if not bet_type_cleaned:
+            self.display_message("Error: Bet type cannot be empty.")
+            return None
+
+        if bet_type_cleaned in ["color", "c"]:
+            return BetType.COLOR
+        elif bet_type_cleaned in ["number", "num", "n"]:
+            return BetType.NUMBER
+        else:
+            self.display_message(f"Error: '{bet_type_input}' is not a valid bet type.")
+            self.display_message("Valid options: 'color' (or 'c'), 'number' (or 'n')")
             return None
 
     def validate_yes_no(self, choice: str) -> Optional[bool]:

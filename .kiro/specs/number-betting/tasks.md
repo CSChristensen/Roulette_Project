@@ -36,7 +36,9 @@
   - _Requirements: 2.1, 2.2, 2.4_
 -
 
-- [-] 2. Add number validation to GameController
+- [x] 2. Add number validation to GameController
+
+
 
 
   - Implement validate_number_choice method for number input validation
@@ -44,7 +46,8 @@
   - Update display methods to show number betting options and odds
   - _Requirements: 1.2, 1.4, 1.5, 4.1, 4.2_
 
-- [-] 2.1 Implement number input validation
+- [x] 2.1 Implement number input validation
+
 
   - Create validate_number_choice method that accepts string input
   - Validate input is integer between 0-36 inclusive
@@ -52,20 +55,27 @@
   - Return validated integer or None for invalid input
   - _Requirements: 1.4, 1.5_
 
-- [ ] 2.2 Add bet type selection interface
+- [x] 2.2 Add bet type selection interface
+
+
   - Create get_bet_type method to prompt user for bet type choice
   - Validate bet type input (color/number, case-insensitive)
   - Display available options with odds information
   - Return BetType enum value or None for invalid input
   - _Requirements: 1.1, 4.1, 4.2_
 
-- [ ] 2.3 Update welcome message and help display
+- [x] 2.3 Update welcome message and help display
+
+
   - Modify display_welcome method to include number betting information
   - Add odds display for both color betting (2:1 Red/Black, 35:1 Green) and number betting (35:1)
   - Update game instructions to explain both betting types
   - _Requirements: 4.1, 4.2_
 
-- [ ] 3. Enhance betting flow for multiple bet types
+- [-] 3. Enhance betting flow for multiple bet types
+
+
+
   - Update handle_betting method to support bet type selection
   - Implement number betting flow alongside existing color betting
   - Add bet confirmation display showing type, amount, and selection
