@@ -1,5 +1,5 @@
-from wheel import Color
-from player import Player
+from .wheel import Color
+from .player import Player
 
 
 class Bet:

@@ -17,20 +17,29 @@
 - Method names use snake_case convention
 
 ## Common Commands
-Since this is a pure Python project with no external dependencies:
+Since this is a structured Python project:
 
 ```bash
 # Run the main game
-python Rouletee.py
+python main.py
+
+# Run the game directly from source
+python -m src.Rouletee
 
 # Run individual modules for testing
-python -m player
-python -m wheel
-python -m table
+python -m src.player
+python -m src.wheel
+python -m src.table
+
+# Run tests (when test framework is added)
+python -m pytest tests/
+python -m unittest discover tests/
 ```
 
 ## Development Notes
-- No build system or package manager currently configured
-- No testing framework set up
-- No requirements.txt or setup.py present
+- Project uses pyproject.toml for configuration
+- Source code organized in src/ package structure
+- Test suite organized in tests/ directory
+- Kiro specs and steering documentation in .kiro/
 - Standard Python .gitignore in use
+- Ready for test framework integration (pytest recommended)

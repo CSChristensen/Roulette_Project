@@ -3,8 +3,8 @@
 Test script to verify game continuation logic works correctly.
 """
 
-from game_controller import GameController
-from player import Player
+from src.game_controller import GameController
+from src.player import Player
 
 def test_game_continuation():
     """Test game continuation and balance scenarios."""

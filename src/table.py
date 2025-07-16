@@ -1,4 +1,4 @@
-from wheel import Wheel
+from .wheel import Wheel
 
 
 class Table:

@@ -3,8 +3,8 @@
 Simple test script to verify edge case handling works correctly.
 """
 
-from game_controller import GameController
-from player import Player
+from src.game_controller import GameController
+from src.player import Player
 
 def test_edge_cases():
     """Test edge case handling methods."""

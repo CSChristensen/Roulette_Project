@@ -1,16 +1,27 @@
 # Project Structure
 
 ## File Organization
-The project follows a flat module structure with each core component in its own file:
+The project follows a structured package layout with source code and tests organized in separate directories:
 
 ```
-├── Rouletee.py     # Main entry point and game orchestration
-├── player.py       # Player class with balance management
-├── bet.py          # Bet class linking players, amounts, and colors
-├── table.py        # Table class managing bets and wheel interactions
-├── wheel.py        # Wheel class with spinning logic and position mapping
-├── rouletee.md     # Documentation (currently empty)
-└── .gitignore      # Standard Python gitignore
+├── main.py                    # Main entry point
+├── src/                       # Source code package
+│   ├── __init__.py           # Package initialization
+│   ├── Rouletee.py           # Main game orchestration
+│   ├── player.py             # Player class with balance management
+│   ├── bet.py                # Bet class linking players, amounts, and colors
+│   ├── table.py              # Table class managing bets and wheel interactions
+│   ├── wheel.py              # Wheel class with spinning logic and position mapping
+│   └── game_controller.py    # Game flow controller
+├── tests/                     # Test suite
+│   ├── test_validation.py    # Input validation tests
+│   ├── test_edge_cases.py    # Edge case testing
+│   └── test_game_continuation.py # Game flow tests
+├── .kiro/                     # Kiro configuration and specs
+│   └── steering/              # Project steering documentation
+├── rouletee.md               # Project documentation
+├── pyproject.toml            # Project configuration
+└── .gitignore                # Git ignore rules
 ```
 
 ## Architecture Patterns
@@ -38,4 +49,6 @@ The project follows a flat module structure with each core component in its own 
 ## Import Structure
 - Each module imports only what it needs
 - Circular imports avoided through careful dependency design
-- Main game logic in Rouletee.py imports all other modules
+- Main game logic in src/Rouletee.py imports all other modules
+- Tests import from src package using relative imports
+- Package structure allows for clean module organization

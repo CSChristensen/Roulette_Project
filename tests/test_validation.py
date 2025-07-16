@@ -11,8 +11,8 @@ try:
 except ImportError:
     PYTEST_AVAILABLE = False
 
-from game_controller import GameController
-from wheel import Color
+from src.game_controller import GameController
+from src.wheel import Color
 
 
 class TestGameControllerValidation:

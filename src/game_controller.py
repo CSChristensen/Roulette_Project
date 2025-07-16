@@ -1,8 +1,8 @@
 from typing import Optional
-from player import Player
-from table import Table
-from bet import Bet
-from wheel import Color
+from .player import Player
+from .table import Table
+from .bet import Bet
+from .wheel import Color
 
 
 class GameController:
