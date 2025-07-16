@@ -1,36 +1,51 @@
 # Implementation Plan
 
-- [ ] 1. Create BetType enumeration and enhance Bet class
+- [x] 1. Create BetType enumeration and enhance Bet class
+
+
+
+
+
   - Add BetType enum to support "color" and "number" betting types
   - Modify Bet class constructor to accept bet type and value (Color or int)
   - Update payout method to handle both color and number bets with correct odds
   - _Requirements: 1.1, 2.1, 2.2, 5.1, 5.2_
 
-- [ ] 1.1 Add BetType enumeration
+- [x] 1.1 Add BetType enumeration
+
+
   - Create BetType enum with COLOR and NUMBER values
   - Import and use in bet-related modules
   - _Requirements: 5.1, 5.2_
 
-- [ ] 1.2 Enhance Bet class for dual bet types
+- [x] 1.2 Enhance Bet class for dual bet types
+
+
   - Modify __init__ method to accept bet_type and bet_value parameters
   - Update class attributes to store bet type and value (Union[Color, int])
   - Maintain backward compatibility with existing color-only bet creation
   - _Requirements: 1.1, 5.1, 5.3_
 
-- [ ] 1.3 Update Bet payout method for number betting
+- [x] 1.3 Update Bet payout method for number betting
+
+
   - Modify payout method to accept both winning_position and winning_color
   - Implement logic to check number bet wins (exact position match)
   - Apply correct odds: 35:1 for number bets, existing odds for color bets
   - Ensure losing bets don't receive payouts
   - _Requirements: 2.1, 2.2, 2.4_
+-
 
-- [ ] 2. Add number validation to GameController
+- [-] 2. Add number validation to GameController
+
+
   - Implement validate_number_choice method for number input validation
   - Add bet type selection functionality
   - Update display methods to show number betting options and odds
   - _Requirements: 1.2, 1.4, 1.5, 4.1, 4.2_
 
-- [ ] 2.1 Implement number input validation
+- [-] 2.1 Implement number input validation
+
   - Create validate_number_choice method that accepts string input
   - Validate input is integer between 0-36 inclusive
   - Handle non-numeric input with appropriate error messages
