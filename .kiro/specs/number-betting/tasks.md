@@ -154,7 +154,9 @@
   - _Requirements: 3.3, 3.4, 4.4_
 -
 
-- [ ] 6. Create comprehensive test suite for number betting
+- [x] 6. Create comprehensive test suite for number betting
+
+
 
   - Implement unit tests for BetType enum and enhanced Bet class
   - Test number input validation with edge cases
@@ -162,21 +164,27 @@
   - Test multiple bet scenarios and mixed bet types
   - _Requirements: 5.4, 5.5_
 
-- [ ] 6.1 Create unit tests for enhanced Bet class
+- [x] 6.1 Create unit tests for enhanced Bet class
+
+
   - Test Bet creation with both color and number bet types
   - Test payout method with winning and losing number bets
   - Verify correct odds application (35:1 for numbers)
   - Test edge cases like betting on 0 and 36
   - _Requirements: 5.4, 5.5_
 
-- [ ] 6.2 Create validation tests for number input
+- [x] 6.2 Create validation tests for number input
+
+
   - Test validate_number_choice with valid inputs (0-36)
   - Test invalid inputs (negative, >36, non-numeric, empty)
   - Test edge cases and boundary conditions
   - Verify error message accuracy and helpfulness
   - _Requirements: 5.5_
 
-- [ ] 6.3 Create integration tests for mixed betting
+- [x] 6.3 Create integration tests for mixed betting
+
+
   - Test rounds with both color and number bets
   - Test multiple bets of same type and mixed types
   - Verify balance updates with complex bet combinations
@@ -184,6 +192,7 @@
   - _Requirements: 5.5_
 
 - [ ] 7. Update main game entry point and documentation
+
   - Ensure main.py works with enhanced GameController
   - Update any documentation or help text
   - Verify backward compatibility with existing functionality
