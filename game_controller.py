@@ -32,60 +32,115 @@ class GameController:
         """Get input from the user with a prompt."""
         return input(prompt).strip()
     
-    def validate_positive_integer(self, value: str) -> Optional[int]:
+    def validate_positive_integer(self, value: str, field_name: str = "value") -> Optional[int]:
         """Validate that a string represents a positive integer.
         
+        Args:
+            value: The string to validate
+            field_name: Name of the field for error messages
+            
         Returns:
             The integer value if valid, None otherwise.
         """
-        try:
-            num = int(value)
-            if num > 0:
-                return num
+        if not value:
+            self.display_message(f"Error: {field_name} cannot be empty.")
             return None
+            
+        try:
+            # Handle potential whitespace and check for non-numeric characters
+            cleaned_value = value.strip()
+            if not cleaned_value:
+                self.display_message(f"Error: {field_name} cannot be empty.")
+                return None
+                
+            # Check for decimal points or other non-integer characters
+            if '.' in cleaned_value or ',' in cleaned_value:
+                self.display_message(f"Error: {field_name} must be a whole number (no decimals).")
+                return None
+                
+            num = int(cleaned_value)
+            if num <= 0:
+                self.display_message(f"Error: {field_name} must be greater than 0.")
+                return None
+            
+            # Check for extremely large numbers that might cause issues
+            if num > 1000000:  # 1 million limit
+                self.display_message(f"Error: {field_name} is too large. Maximum allowed is $1,000,000.")
+                return None
+                
+            return num
         except ValueError:
+            self.display_message(f"Error: '{value}' is not a valid number. Please enter a positive whole number.")
             return None
     
     def validate_color_choice(self, choice: str) -> Optional[Color]:
-        """Validate color choice input.
+        """Validate color choice input with case-insensitive matching.
         
+        Args:
+            choice: The color choice string to validate
+            
         Returns:
             Color enum if valid, None otherwise.
         """
-        choice_lower = choice.lower()
-        if choice_lower == "red":
+        if not choice:
+            self.display_message("Error: Color choice cannot be empty.")
+            return None
+            
+        choice_cleaned = choice.strip().lower()
+        if not choice_cleaned:
+            self.display_message("Error: Color choice cannot be empty.")
+            return None
+            
+        # Support multiple variations and abbreviations
+        if choice_cleaned in ["red", "r"]:
             return Color.RED
-        elif choice_lower == "black":
+        elif choice_cleaned in ["black", "b"]:
             return Color.BLACK
-        elif choice_lower == "green":
+        elif choice_cleaned in ["green", "g", "0"]:
             return Color.GREEN
-        return None
+        else:
+            self.display_message(f"Error: '{choice}' is not a valid color choice.")
+            self.display_message("Valid options: 'red' (or 'r'), 'black' (or 'b'), 'green' (or 'g')")
+            return None
     
     def validate_yes_no(self, choice: str) -> Optional[bool]:
-        """Validate yes/no input.
+        """Validate yes/no input with case-insensitive matching.
         
+        Args:
+            choice: The yes/no choice string to validate
+            
         Returns:
             True for yes, False for no, None for invalid input.
         """
-        choice_lower = choice.lower()
-        if choice_lower in ["y", "yes"]:
+        if not choice:
+            self.display_message("Error: Please enter a response.")
+            return None
+            
+        choice_cleaned = choice.strip().lower()
+        if not choice_cleaned:
+            self.display_message("Error: Please enter a response.")
+            return None
+            
+        # Support multiple variations
+        if choice_cleaned in ["y", "yes", "yeah", "yep", "1", "true"]:
             return True
-        elif choice_lower in ["n", "no"]:
+        elif choice_cleaned in ["n", "no", "nope", "0", "false"]:
             return False
-        return None
+        else:
+            self.display_message(f"Error: '{choice}' is not a valid response.")
+            self.display_message("Please enter 'y' for yes or 'n' for no.")
+            return None
     
     def setup_player(self) -> None:
         """Set up a new player with initial deposit."""
         while True:
             deposit_input = self.get_user_input("Enter your initial deposit amount: $")
-            deposit_amount = self.validate_positive_integer(deposit_input)
+            deposit_amount = self.validate_positive_integer(deposit_input, "deposit amount")
             
             if deposit_amount is not None:
                 self.player = Player(deposit_amount)
                 self.display_message(f"Player created with balance: ${deposit_amount}")
                 break
-            else:
-                self.display_message("Error: Please enter a valid positive number for your deposit.")
     
     def handle_additional_deposit(self) -> bool:
         """Handle additional deposit for existing player.
@@ -100,14 +155,12 @@ class GameController:
             if choice is True:
                 while True:
                     deposit_input = self.get_user_input("Enter deposit amount: $")
-                    deposit_amount = self.validate_positive_integer(deposit_input)
+                    deposit_amount = self.validate_positive_integer(deposit_input, "deposit amount")
                     
                     if deposit_amount is not None:
                         self.player.add_to_balance(deposit_amount)
                         self.display_message(f"Deposit successful! New balance: ${self.player.get_balance()}")
                         return True
-                    else:
-                        self.display_message("Error: Please enter a valid positive number for your deposit.")
             elif choice is False:
                 return False
             else:
@@ -129,15 +182,25 @@ class GameController:
         # Get bet amount
         while True:
             bet_input = self.get_user_input("Enter your bet amount: $")
-            bet_amount = self.validate_positive_integer(bet_input)
+            bet_amount = self.validate_positive_integer(bet_input, "bet amount")
             
             if bet_amount is None:
-                self.display_message("Error: Please enter a valid positive number for your bet.")
                 continue
             
             if bet_amount > current_balance:
                 self.display_message(f"Error: Bet amount (${bet_amount}) exceeds your balance (${current_balance}).")
                 continue
+            
+            # Handle exact balance bet scenario
+            if bet_amount == current_balance:
+                self.handle_exact_balance_bet(current_balance)
+                # Ask again if they want to proceed with this amount
+                confirm_input = self.get_user_input(f"Confirm bet of ${bet_amount} (your entire balance)? (y/n): ")
+                confirm = self.validate_yes_no(confirm_input)
+                if confirm is False:
+                    continue  # Ask for bet amount again
+                elif confirm is None:
+                    continue  # Invalid input, ask again
             
             break
         
@@ -153,11 +216,14 @@ class GameController:
             
             if color_choice is not None:
                 break
-            else:
-                self.display_message("Error: Please enter 'red', 'black', or 'green'.")
         
         # Deduct bet amount from player balance and place bet
         try:
+            # Double-check balance before deducting (edge case protection)
+            if bet_amount > self.player.get_balance():
+                self.display_message("Error: Balance changed unexpectedly. Please try again.")
+                return False
+                
             self.player.subtract_from_balance(bet_amount)
             bet = Bet(bet_amount, color_choice, self.player)
             self.table.place_bet(bet)
@@ -168,6 +234,15 @@ class GameController:
             
         except ValueError as e:
             self.display_message(f"Error placing bet: {e}")
+            # Restore balance if bet placement failed after deduction
+            try:
+                self.player.add_to_balance(bet_amount)
+                self.display_message("Bet amount has been refunded to your balance.")
+            except:
+                self.display_message("Warning: There may be an issue with your balance. Please check.")
+            return False
+        except Exception as e:
+            self.display_message(f"Unexpected error placing bet: {e}")
             return False
     
     def execute_round(self) -> None:
@@ -230,33 +305,116 @@ class GameController:
             else:
                 self.display_message("Error: Please enter 'y' for yes or 'n' for no.")
     
+    def check_minimum_bet_capability(self) -> bool:
+        """Check if player has enough balance for minimum bet ($1).
+        
+        Returns:
+            True if player can make minimum bet, False otherwise.
+        """
+        return self.player.get_balance() >= 1
+    
+    def handle_zero_balance_scenario(self) -> bool:
+        """Handle scenario when player balance becomes zero.
+        
+        Returns:
+            True if player made deposit and can continue, False if quitting.
+        """
+        self.display_message("\n⚠️  Your balance is now $0!")
+        self.display_message("You need money to continue playing.")
+        
+        while True:
+            choice_input = self.get_user_input("Would you like to make a deposit to continue? (y/n): ")
+            choice = self.validate_yes_no(choice_input)
+            
+            if choice is True:
+                return self.handle_additional_deposit()
+            elif choice is False:
+                self.display_message("Thanks for playing!")
+                return False
+    
+    def handle_exact_balance_bet(self, current_balance: int) -> None:
+        """Handle case where player wants to bet their exact balance.
+        
+        Args:
+            current_balance: Player's current balance
+        """
+        self.display_message(f"\n💡 Note: You have exactly ${current_balance}.")
+        self.display_message("If you bet all of it and lose, your balance will be $0.")
+        
+        while True:
+            choice_input = self.get_user_input("Are you sure you want to bet your entire balance? (y/n): ")
+            choice = self.validate_yes_no(choice_input)
+            
+            if choice is not None:
+                if choice is False:
+                    self.display_message("Wise choice! You can bet a smaller amount.")
+                return
+    
     def display_final_balance(self) -> None:
         """Display final balance and goodbye message."""
         final_balance = self.player.get_balance()
         self.display_message("\n" + "=" * 40)
         self.display_message("Thanks for playing Roulette!")
         self.display_message(f"Your final balance: ${final_balance}")
+        if final_balance > 0:
+            self.display_message("🎉 You're leaving with money! Well done!")
+        else:
+            self.display_message("💸 Better luck next time!")
         self.display_message("=" * 40)
     
     def run_game(self) -> None:
-        """Main game loop that orchestrates the entire game."""
-        # Display welcome and set up player
-        self.display_welcome()
-        self.setup_player()
-        
-        # Main game loop
-        while True:
-            # Handle betting
-            if not self.handle_betting():
-                # If betting failed due to insufficient funds, offer deposit or quit
-                if not self.handle_additional_deposit():
+        """Main game loop that orchestrates the entire game with comprehensive error handling."""
+        try:
+            # Display welcome and set up player
+            self.display_welcome()
+            self.setup_player()
+            
+            # Main game loop
+            while True:
+                # Check if player can make minimum bet before attempting to bet
+                if not self.check_minimum_bet_capability():
+                    if not self.handle_zero_balance_scenario():
+                        self.display_final_balance()
+                        break
+                    continue
+                
+                # Handle betting
+                try:
+                    if not self.handle_betting():
+                        # If betting failed due to insufficient funds, offer deposit or quit
+                        if not self.handle_additional_deposit():
+                            self.display_final_balance()
+                            break
+                        continue
+                except Exception as e:
+                    self.display_message(f"An error occurred during betting: {e}")
+                    self.display_message("Please try again.")
+                    continue
+                
+                # Execute the round
+                try:
+                    self.execute_round()
+                except Exception as e:
+                    self.display_message(f"An error occurred during the game round: {e}")
+                    self.display_message("The round will be skipped, but your bet has been processed.")
+                    continue
+                
+                # Check if player wants to continue
+                try:
+                    if not self.should_continue_playing():
+                        break
+                except Exception as e:
+                    self.display_message(f"An error occurred: {e}")
+                    self.display_message("Ending game for safety.")
                     self.display_final_balance()
                     break
-                continue
-            
-            # Execute the round
-            self.execute_round()
-            
-            # Check if player wants to continue
-            if not self.should_continue_playing():
-                break
+                    
+        except KeyboardInterrupt:
+            self.display_message("\n\nGame interrupted by user.")
+            if self.player:
+                self.display_final_balance()
+        except Exception as e:
+            self.display_message(f"\nAn unexpected error occurred: {e}")
+            self.display_message("Game will now exit.")
+            if self.player:
+                self.display_final_balance()

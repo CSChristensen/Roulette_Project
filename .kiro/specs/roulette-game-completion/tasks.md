@@ -117,19 +117,28 @@
   - Add proper error handling for game startup
   - _Requirements: 1.1_
 
-- [ ] 4. Add comprehensive error handling and edge cases
+- [x] 4. Add comprehensive error handling and edge cases
+
+
+
+
+
   - Ensure all user inputs are properly validated
   - Handle edge cases like exact balance bets
   - _Requirements: 5.5_
 
-- [ ] 4.1 Implement robust input validation
+- [x] 4.1 Implement robust input validation
+
+
   - Add validation for all numeric inputs (deposits, bets)
   - Add validation for color choices with case-insensitive matching
   - Add validation for yes/no prompts
   - Ensure all validation includes error messages and re-prompting
   - _Requirements: 5.5_
 
-- [ ] 4.2 Add edge case handling
+- [x] 4.2 Add edge case handling
+
+
   - Handle case where player has exactly enough for minimum bet
   - Handle case where player balance becomes zero
   - Add proper error handling for all game operations

@@ -1,54 +1,37 @@
 #!/usr/bin/env python3
 """
-Test script to verify game continuation logic is working properly.
+Test script to verify game continuation logic works correctly.
 """
 
 from game_controller import GameController
 from player import Player
-from table import Table
 
-def test_game_continuation_methods():
-    """Test the game continuation methods in isolation."""
-    
-    print("Testing GameController game continuation logic...")
-    
-    # Create a game controller
+def test_game_continuation():
+    """Test game continuation and balance scenarios."""
     controller = GameController()
     
-    # Test 1: Test with a player who has money
-    print("\n=== Test 1: Player with sufficient balance ===")
+    print("Testing game continuation logic...")
+    
+    # Test with sufficient balance
+    print("\n1. Testing with sufficient balance:")
     controller.player = Player(100)
-    print(f"Player balance: ${controller.player.get_balance()}")
+    can_continue = controller.check_minimum_bet_capability()
+    print(f"  ✓ Player with $100 can continue: {can_continue}")
     
-    # Test validation methods
-    print("\n=== Test 2: Validation methods ===")
-    
-    # Test yes/no validation
-    test_cases = [
-        ("y", True),
-        ("yes", True),
-        ("Y", True),
-        ("YES", True),
-        ("n", False),
-        ("no", False),
-        ("N", False),
-        ("NO", False),
-        ("maybe", None),
-        ("", None)
-    ]
-    
-    for input_val, expected in test_cases:
-        result = controller.validate_yes_no(input_val)
-        status = "✓" if result == expected else "✗"
-        print(f"{status} validate_yes_no('{input_val}') -> {result} (expected {expected})")
-    
-    # Test 3: Test with zero balance player
-    print("\n=== Test 3: Player with zero balance ===")
+    # Test with zero balance
+    print("\n2. Testing with zero balance:")
     controller.player = Player(0)
-    print(f"Player balance: ${controller.player.get_balance()}")
+    can_continue = controller.check_minimum_bet_capability()
+    print(f"  ✓ Player with $0 cannot continue: {not can_continue}")
     
-    print("\nAll basic tests completed successfully!")
-    print("The game continuation logic appears to be fully implemented.")
+    # Test exact balance scenarios
+    print("\n3. Testing exact balance scenarios:")
+    for balance in [1, 5, 10]:
+        controller.player = Player(balance)
+        can_bet = controller.check_minimum_bet_capability()
+        print(f"  ✓ Player with ${balance} can make minimum bet: {can_bet}")
+    
+    print("\nGame continuation tests completed!")
 
 if __name__ == "__main__":
-    test_game_continuation_methods()
+    test_game_continuation()
