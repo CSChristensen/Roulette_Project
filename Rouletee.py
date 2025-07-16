@@ -13,8 +13,8 @@ def main():
     table.place_bet(bet_1)
     table.place_bet(bet_2)
 
-    table.spin_wheel()
-    print(table.wheel.get_ball_position)
+    table.spin_wheel_and_payout()
+    print(table.wheel.get_ball_position())
 
 
 if __name__ == "__main__":

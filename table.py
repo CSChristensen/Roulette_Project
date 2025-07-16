@@ -12,8 +12,9 @@ class Table:
         self._payout_bets()
 
     def _payout_bets(self):
+        winning_position, winning_color = self.wheel.get_ball_position()
         for bet in self.bets:
-            bet.payout()
+            bet.payout(winning_color)
         self.bets = []
 
     def place_bet(self, bet):

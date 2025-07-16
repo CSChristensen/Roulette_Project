@@ -1,27 +1,44 @@
 # Implementation Plan
 
-- [ ] 1. Fix critical bugs in existing classes
+- [x] 1. Fix critical bugs in existing classes
+
+
+
+
+
   - Fix typos and method signature issues that prevent the game from running
   - Ensure all existing functionality works correctly
   - _Requirements: 5.1, 5.4_
 
-- [ ] 1.1 Fix Player class method typo and add balance getter
+- [x] 1.1 Fix Player class method typo and add balance getter
+
+
   - Rename `subract_from_balance` to `subtract_from_balance`
   - Add `get_balance()` method to return current balance
   - Add validation to prevent negative balances in subtract method
   - _Requirements: 5.4_
 
-- [ ] 1.2 Fix Wheel class attribute typo and method call
+- [x] 1.2 Fix Wheel class attribute typo and method call
+
+
   - Rename `_ball_postion` to `_ball_position` 
   - Fix `get_ball_position` method call in main (missing parentheses)
   - Ensure method returns correct tuple format
   - _Requirements: 5.1, 5.4_
 
+
+
+
 - [ ] 1.3 Fix Table class payout logic
   - Update `spin_wheel_and_payout` method to call `spin_wheel` instead of `spin`
+
   - Fix `_payout_bets` method to get winning color and pass it to bet payout
+
+
+
   - Ensure bets are cleared after processing
   - _Requirements: 5.2, 5.3_
+
 
 - [ ] 1.4 Fix Bet class payout method
   - Update payout method to only add winnings when bet wins
@@ -30,6 +47,7 @@
   - _Requirements: 5.2_
 
 - [ ] 2. Create GameController class for user interface
+
   - Implement main game loop with user interaction
   - Handle all user input validation and error messages
   - _Requirements: 1.1, 1.2, 1.3, 1.4_

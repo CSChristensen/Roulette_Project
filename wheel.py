@@ -54,10 +54,10 @@ class Wheel:
     """A class to represent a wheel in a roulette game."""
 
     def __init__(self):
-        self._ball_postion = None
+        self._ball_position = None
 
     def spin(self):
-        self._ball_postion = randint(0, 36)
+        self._ball_position = randint(0, 36)
 
     def get_ball_position(self) -> Tuple[int, Color]:
-        return (self._ball_postion, WHEEL_POSITIONS[self._ball_postion])
+        return (self._ball_position, WHEEL_POSITIONS[self._ball_position])

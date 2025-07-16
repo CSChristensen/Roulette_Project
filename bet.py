@@ -12,4 +12,6 @@ class Bet:
     def payout(self, color: Color) -> None:
         if self.color == color:
             odds = 35 if color == Color.GREEN else 2
-            self.player.add_to_balance(self.amount * odds)
+            winnings = self.amount * odds
+            self.player.add_to_balance(winnings)
+        # If bet loses, no payout is made (amount was already deducted when bet was placed)
