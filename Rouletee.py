@@ -1,25 +1,17 @@
-from table import Table
-from player import Player
-from bet import Bet
-from wheel import Color
+from game_controller import GameController
 
 
 def main():
-    table = Table()
-    player_1 = Player(1000)
-    player_2 = Player(2000)
-    bet_1 = Bet(100, Color.RED, player_1)
-    bet_2 = Bet(100, Color.GREEN, player_2)
-    table.place_bet(bet_1)
-    table.place_bet(bet_2)
-
-    table.spin_wheel_and_payout()
-    print(table.wheel.get_ball_position())
+    """Main entry point for the roulette game."""
+    try:
+        game = GameController()
+        game.run_game()
+    except KeyboardInterrupt:
+        print("\n\nGame interrupted by user. Thanks for playing!")
+    except Exception as e:
+        print(f"\nAn error occurred: {e}")
+        print("Please try running the game again.")
 
 
 if __name__ == "__main__":
     main()
-
-    # def deposit():
-    # amount = input("what is your deposit")
-    # if amount.isdigit():

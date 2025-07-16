@@ -92,18 +92,26 @@
 
 
 
+
   - Add method to prompt for continue/quit decision
   - Handle insufficient balance scenarios
   - Provide option to make additional deposits
   - Implement graceful game exit with final balance display
   - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 3. Update main game entry point
+- [x] 3. Update main game entry point
+
+
+
+
+
   - Replace current main() function with GameController usage
   - Remove test code and implement proper game initialization
   - _Requirements: 1.1_
 
-- [ ] 3.1 Refactor main() function
+- [x] 3.1 Refactor main() function
+
+
   - Remove existing test code from main()
   - Initialize and start GameController
   - Add proper error handling for game startup
