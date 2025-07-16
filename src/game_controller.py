@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from .player import Player
 from .table import Table
 from .bet import Bet, BetType
@@ -308,6 +308,30 @@ class GameController:
 
             break
 
+        # Get bet type selection
+        while True:
+            bet_type = self.get_bet_type()
+            if bet_type is not None:
+                break
+
+        # Branch to appropriate betting flow based on bet type
+        if bet_type == BetType.COLOR:
+            return self._handle_color_betting(bet_amount)
+        elif bet_type == BetType.NUMBER:
+            return self._handle_number_betting(bet_amount)
+        else:
+            self.display_message("Error: Invalid bet type.")
+            return False
+
+    def _handle_color_betting(self, bet_amount: int) -> bool:
+        """Handle color betting flow (maintains backward compatibility).
+        
+        Args:
+            bet_amount: The amount to bet
+            
+        Returns:
+            True if bet was placed successfully, False otherwise.
+        """
         # Get color choice
         while True:
             self.display_message("Choose a color to bet on:")
@@ -333,10 +357,66 @@ class GameController:
                 return False
 
             self.player.subtract_from_balance(bet_amount)
-            bet = Bet(bet_amount, color_choice, self.player)
+            bet = Bet(bet_amount, self.player, BetType.COLOR, color_choice)
             self.table.place_bet(bet)
 
-            self.display_message(f"Bet placed: ${bet_amount} on {color_choice.value}")
+            # Display bet confirmation
+            self.display_bet_confirmation(BetType.COLOR, bet_amount, color_choice)
+            self.display_message(f"Remaining balance: ${self.player.get_balance()}")
+            return True
+
+        except ValueError as e:
+            self.display_message(f"Error placing bet: {e}")
+            # Restore balance if bet placement failed after deduction
+            try:
+                self.player.add_to_balance(bet_amount)
+                self.display_message("Bet amount has been refunded to your balance.")
+            except:
+                self.display_message(
+                    "Warning: There may be an issue with your balance. Please check."
+                )
+            return False
+        except Exception as e:
+            self.display_message(f"Unexpected error placing bet: {e}")
+            return False
+
+    def _handle_number_betting(self, bet_amount: int) -> bool:
+        """Handle number betting flow.
+        
+        Args:
+            bet_amount: The amount to bet
+            
+        Returns:
+            True if bet was placed successfully, False otherwise.
+        """
+        # Get number choice
+        while True:
+            self.display_message("Choose a number to bet on (0-36):")
+            self.display_message("- All numbers pay 35:1 odds")
+
+            number_input = self.get_user_input(
+                "Enter your number choice (0-36): "
+            )
+            number_choice = self.validate_number_choice(number_input)
+
+            if number_choice is not None:
+                break
+
+        # Deduct bet amount from player balance and place bet
+        try:
+            # Double-check balance before deducting (edge case protection)
+            if bet_amount > self.player.get_balance():
+                self.display_message(
+                    "Error: Balance changed unexpectedly. Please try again."
+                )
+                return False
+
+            self.player.subtract_from_balance(bet_amount)
+            bet = Bet(bet_amount, self.player, BetType.NUMBER, number_choice)
+            self.table.place_bet(bet)
+
+            # Display bet confirmation
+            self.display_bet_confirmation(BetType.NUMBER, bet_amount, number_choice)
             self.display_message(f"Remaining balance: ${self.player.get_balance()}")
             return True
 
@@ -467,6 +547,40 @@ class GameController:
                 if choice is False:
                     self.display_message("Wise choice! You can bet a smaller amount.")
                 return
+
+    def display_bet_confirmation(self, bet_type: BetType, amount: int, selection: Union[Color, int]) -> None:
+        """Display bet confirmation with type, amount, selection, and potential payout.
+        
+        Args:
+            bet_type: The type of bet (COLOR or NUMBER)
+            amount: The bet amount
+            selection: The color or number selected
+        """
+        self.display_message("\n" + "-" * 25)
+        self.display_message("BET CONFIRMATION")
+        self.display_message("-" * 25)
+        
+        if bet_type == BetType.COLOR:
+            color_name = selection.value.upper()
+            odds = 35 if selection == Color.GREEN else 2
+            potential_payout = amount * odds
+            
+            self.display_message(f"Bet Type: Color")
+            self.display_message(f"Selection: {color_name}")
+            self.display_message(f"Bet Amount: ${amount}")
+            self.display_message(f"Odds: {odds}:1")
+            self.display_message(f"Potential Payout: ${potential_payout}")
+            
+        elif bet_type == BetType.NUMBER:
+            potential_payout = amount * 35
+            
+            self.display_message(f"Bet Type: Number")
+            self.display_message(f"Selection: {selection}")
+            self.display_message(f"Bet Amount: ${amount}")
+            self.display_message(f"Odds: 35:1")
+            self.display_message(f"Potential Payout: ${potential_payout}")
+        
+        self.display_message("-" * 25)
 
     def display_final_balance(self) -> None:
         """Display final balance and goodbye message."""

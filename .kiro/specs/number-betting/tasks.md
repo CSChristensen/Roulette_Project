@@ -72,7 +72,9 @@
   - Update game instructions to explain both betting types
   - _Requirements: 4.1, 4.2_
 
-- [-] 3. Enhance betting flow for multiple bet types
+- [x] 3. Enhance betting flow for multiple bet types
+
+
 
 
 
@@ -81,32 +83,40 @@
   - Add bet confirmation display showing type, amount, and selection
   - _Requirements: 1.1, 1.2, 1.3, 4.3, 4.4_
 
-- [ ] 3.1 Modify betting flow for type selection
+- [x] 3.1 Modify betting flow for type selection
+
+
   - Update handle_betting method to first prompt for bet type
   - Branch to appropriate input collection based on bet type
   - Maintain existing color betting flow for backward compatibility
   - _Requirements: 1.1, 5.3_
 
-- [ ] 3.2 Implement number betting flow
+- [x] 3.2 Implement number betting flow
+
   - Add number betting branch in handle_betting method
   - Prompt for number choice using validate_number_choice
   - Create number-based Bet object with correct parameters
   - Display bet confirmation with number and odds information
   - _Requirements: 1.2, 1.3, 4.3_
 
-- [ ] 3.3 Add bet confirmation display
+- [x] 3.3 Add bet confirmation display
+
+
   - Create display_bet_confirmation method to show bet details
   - Display bet type, amount, selection, and potential payout
   - Use consistent formatting for both color and number bets
   - _Requirements: 4.3_
 
-- [ ] 4. Update Table class to pass winning position to bets
+- [-] 4. Update Table class to pass winning position to bets
+
+
   - Modify _payout_bets method to pass both winning position and color
   - Ensure all bet payout calls receive complete winning information
   - Maintain compatibility with existing color-only bet processing
   - _Requirements: 2.4, 5.1, 5.3_
 
-- [ ] 4.1 Update Table payout method signature
+- [-] 4.1 Update Table payout method signature
+
   - Modify _payout_bets method to get winning position from wheel
   - Pass both winning_position and winning_color to each bet's payout method
   - Update method calls to provide complete winning information
