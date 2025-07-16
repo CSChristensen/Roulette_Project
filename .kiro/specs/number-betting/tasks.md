@@ -124,7 +124,9 @@
   - Update method calls to provide complete winning information
   - _Requirements: 2.4, 5.2_
 
-- [-] 5. Add support for multiple bets per round
+- [x] 5. Add support for multiple bets per round
+
+
 
 
 
@@ -133,7 +135,8 @@
   - Enhance result display to show outcomes for each bet
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [-] 5.1 Implement multiple bet placement
+- [x] 5.1 Implement multiple bet placement
+
 
   - Add handle_multiple_bets method to GameController
   - Allow players to place additional bets after first bet
@@ -141,14 +144,18 @@
   - Track all bets placed in current round
   - _Requirements: 3.1, 3.2_
 
-- [ ] 5.2 Update round execution for multiple bets
+- [x] 5.2 Update round execution for multiple bets
+
+
   - Modify execute_round method to handle multiple bets
   - Calculate and display individual payout results for each bet
   - Show total winnings/losses for the round
   - Display detailed results showing each bet outcome
   - _Requirements: 3.3, 3.4, 4.4_
+-
 
 - [ ] 6. Create comprehensive test suite for number betting
+
   - Implement unit tests for BetType enum and enhanced Bet class
   - Test number input validation with edge cases
   - Test payout calculations for number bets

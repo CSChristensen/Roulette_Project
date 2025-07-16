@@ -267,61 +267,122 @@ class GameController:
                 self.display_message("Error: Please enter 'y' for yes or 'n' for no.")
 
     def handle_betting(self) -> bool:
-        """Handle the betting process for a round.
+        """Handle the betting process for a round with support for multiple bets.
 
         Returns:
-            True if bet was placed successfully, False if player has insufficient funds.
+            True if at least one bet was placed successfully, False if no bets were placed.
         """
-        current_balance = self.player.get_balance()
-        self.display_message(f"\nCurrent balance: ${current_balance}")
+        return self.handle_multiple_bets()
 
-        if current_balance <= 0:
-            self.display_message("You have no money left to bet!")
-            return False
-
-        # Get bet amount
+    def handle_multiple_bets(self) -> bool:
+        """Handle multiple bet placement for a single round.
+        
+        Returns:
+            True if at least one bet was placed successfully, False if no bets were placed.
+        """
+        bets_placed = 0
+        total_bet_amount = 0
+        
         while True:
-            bet_input = self.get_user_input("Enter your bet amount: $")
-            bet_amount = self.validate_positive_integer(bet_input, "bet amount")
+            current_balance = self.player.get_balance()
+            remaining_balance = current_balance - total_bet_amount
+            
+            self.display_message(f"\nCurrent balance: ${current_balance}")
+            if total_bet_amount > 0:
+                self.display_message(f"Amount already bet this round: ${total_bet_amount}")
+                self.display_message(f"Remaining available: ${remaining_balance}")
 
-            if bet_amount is None:
+            if remaining_balance <= 0:
+                if bets_placed == 0:
+                    self.display_message("You have no money left to bet!")
+                    return False
+                else:
+                    self.display_message("You have no remaining balance for additional bets.")
+                    break
+
+            # Get bet amount
+            bet_amount = None
+            while bet_amount is None:
+                bet_input = self.get_user_input("Enter your bet amount: $")
+                bet_amount = self.validate_positive_integer(bet_input, "bet amount")
+
+                if bet_amount is None:
+                    continue
+
+                if bet_amount > remaining_balance:
+                    self.display_message(
+                        f"Error: Bet amount (${bet_amount}) exceeds your remaining balance (${remaining_balance})."
+                    )
+                    bet_amount = None
+                    continue
+
+                # Handle exact remaining balance bet scenario
+                if bet_amount == remaining_balance and remaining_balance == current_balance:
+                    self.handle_exact_balance_bet(current_balance)
+                    # Ask again if they want to proceed with this amount
+                    confirm_input = self.get_user_input(
+                        f"Confirm bet of ${bet_amount} (your entire balance)? (y/n): "
+                    )
+                    confirm = self.validate_yes_no(confirm_input)
+                    if confirm is False:
+                        bet_amount = None
+                        continue  # Ask for bet amount again
+                    elif confirm is None:
+                        bet_amount = None
+                        continue  # Invalid input, ask again
+
+            # Get bet type selection
+            bet_type = None
+            while bet_type is None:
+                bet_type = self.get_bet_type()
+
+            # Place the bet based on type
+            bet_placed = False
+            if bet_type == BetType.COLOR:
+                bet_placed = self._handle_color_betting(bet_amount)
+            elif bet_type == BetType.NUMBER:
+                bet_placed = self._handle_number_betting(bet_amount)
+            else:
+                self.display_message("Error: Invalid bet type.")
                 continue
 
-            if bet_amount > current_balance:
-                self.display_message(
-                    f"Error: Bet amount (${bet_amount}) exceeds your balance (${current_balance})."
-                )
+            if bet_placed:
+                bets_placed += 1
+                total_bet_amount += bet_amount
+                self.display_message(f"Bet #{bets_placed} placed successfully!")
+            else:
+                self.display_message("Failed to place bet. Please try again.")
                 continue
 
-            # Handle exact balance bet scenario
-            if bet_amount == current_balance:
-                self.handle_exact_balance_bet(current_balance)
-                # Ask again if they want to proceed with this amount
-                confirm_input = self.get_user_input(
-                    f"Confirm bet of ${bet_amount} (your entire balance)? (y/n): "
-                )
-                confirm = self.validate_yes_no(confirm_input)
-                if confirm is False:
-                    continue  # Ask for bet amount again
-                elif confirm is None:
-                    continue  # Invalid input, ask again
-
-            break
-
-        # Get bet type selection
-        while True:
-            bet_type = self.get_bet_type()
-            if bet_type is not None:
+            # Ask if player wants to place another bet
+            remaining_after_bet = self.player.get_balance()
+            if remaining_after_bet <= 0:
+                self.display_message("No remaining balance for additional bets.")
                 break
+            
+            while True:
+                another_bet_input = self.get_user_input(
+                    f"\nWould you like to place another bet? (y/n): "
+                )
+                another_bet = self.validate_yes_no(another_bet_input)
+                
+                if another_bet is True:
+                    break  # Continue to place another bet
+                elif another_bet is False:
+                    # Player doesn't want to place another bet
+                    if bets_placed > 0:
+                        self.display_message(f"\nTotal bets placed: {bets_placed}")
+                        self.display_message(f"Total amount bet: ${total_bet_amount}")
+                    return bets_placed > 0
+                else:
+                    self.display_message("Error: Please enter 'y' for yes or 'n' for no.")
 
-        # Branch to appropriate betting flow based on bet type
-        if bet_type == BetType.COLOR:
-            return self._handle_color_betting(bet_amount)
-        elif bet_type == BetType.NUMBER:
-            return self._handle_number_betting(bet_amount)
-        else:
-            self.display_message("Error: Invalid bet type.")
-            return False
+        # If we exit the loop, return whether any bets were placed
+        if bets_placed > 0:
+            self.display_message(f"\nTotal bets placed: {bets_placed}")
+            self.display_message(f"Total amount bet: ${total_bet_amount}")
+        
+        return bets_placed > 0
 
     def _handle_color_betting(self, bet_amount: int) -> bool:
         """Handle color betting flow (maintains backward compatibility).
@@ -436,13 +497,14 @@ class GameController:
             return False
 
     def execute_round(self) -> None:
-        """Execute a game round - spin wheel and process payouts."""
+        """Execute a game round - spin wheel and process payouts with detailed results for multiple bets."""
         self.display_message("\n" + "=" * 30)
         self.display_message("Spinning the wheel...")
         self.display_message("=" * 30)
 
-        # Store balance before spin for payout calculation
+        # Store balance before spin and capture bet details for result display
         balance_before = self.player.get_balance()
+        placed_bets = self._capture_bet_details()
 
         # Spin wheel and process payouts
         self.table.spin_wheel_and_payout()
@@ -450,22 +512,101 @@ class GameController:
         # Get winning position and color
         winning_position, winning_color = self.table.wheel.get_ball_position()
 
-        # Display results
+        # Display winning result
         self.display_message(
             f"The ball landed on: {winning_position} ({winning_color.value.upper()})"
         )
 
-        # Calculate and display payout results
-        balance_after = self.player.get_balance()
-        payout_amount = balance_after - balance_before
+        # Display detailed results for each bet
+        self._display_detailed_bet_results(placed_bets, winning_position, winning_color)
 
-        if payout_amount > 0:
-            self.display_message(f"🎉 Congratulations! You won ${payout_amount}!")
+        # Calculate and display total payout results
+        balance_after = self.player.get_balance()
+        total_payout = balance_after - balance_before
+
+        self.display_message("\n" + "-" * 30)
+        self.display_message("ROUND SUMMARY")
+        self.display_message("-" * 30)
+
+        if total_payout > 0:
+            self.display_message(f"🎉 Congratulations! Total winnings: ${total_payout}!")
+        elif total_payout == 0:
+            self.display_message("💰 You broke even this round!")
         else:
             self.display_message("😞 Sorry, you lost this round.")
 
         self.display_message(f"Your new balance: ${balance_after}")
         self.display_message("=" * 30)
+
+    def _capture_bet_details(self) -> list:
+        """Capture details of all placed bets before they are processed.
+        
+        Returns:
+            List of bet detail dictionaries for result display.
+        """
+        bet_details = []
+        for bet in self.table.bets:
+            detail = {
+                'amount': bet.amount,
+                'bet_type': bet.bet_type,
+                'bet_value': bet.bet_value,
+                'player': bet.player
+            }
+            bet_details.append(detail)
+        return bet_details
+
+    def _display_detailed_bet_results(self, bet_details: list, winning_position: int, winning_color: Color) -> None:
+        """Display detailed results for each individual bet.
+        
+        Args:
+            bet_details: List of bet detail dictionaries
+            winning_position: The winning position from the wheel
+            winning_color: The winning color from the wheel
+        """
+        if not bet_details:
+            return
+
+        self.display_message("\n" + "-" * 30)
+        self.display_message("BET RESULTS")
+        self.display_message("-" * 30)
+
+        total_winnings = 0
+        for i, bet_detail in enumerate(bet_details, 1):
+            bet_type = bet_detail['bet_type']
+            bet_value = bet_detail['bet_value']
+            bet_amount = bet_detail['amount']
+            
+            # Determine if bet won and calculate winnings
+            won = False
+            winnings = 0
+            odds = 0
+            
+            if bet_type == BetType.COLOR:
+                if bet_value == winning_color:
+                    won = True
+                    odds = 35 if winning_color == Color.GREEN else 2
+                    winnings = bet_amount * odds
+            elif bet_type == BetType.NUMBER:
+                if bet_value == winning_position:
+                    won = True
+                    odds = 35
+                    winnings = bet_amount * odds
+
+            # Display bet result
+            if bet_type == BetType.COLOR:
+                color_name = bet_value.value.upper()
+                self.display_message(f"Bet #{i}: ${bet_amount} on {color_name}")
+            else:  # NUMBER bet
+                self.display_message(f"Bet #{i}: ${bet_amount} on number {bet_value}")
+            
+            if won:
+                self.display_message(f"  ✅ WON! Payout: ${winnings} (odds {odds}:1)")
+                total_winnings += winnings
+            else:
+                self.display_message(f"  ❌ Lost")
+
+        if len(bet_details) > 1:
+            self.display_message(f"\nTotal winnings from all bets: ${total_winnings}")
 
     def should_continue_playing(self) -> bool:
         """Ask player if they want to continue playing.
