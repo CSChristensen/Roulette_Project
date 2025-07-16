@@ -107,7 +107,8 @@
   - Use consistent formatting for both color and number bets
   - _Requirements: 4.3_
 
-- [-] 4. Update Table class to pass winning position to bets
+- [x] 4. Update Table class to pass winning position to bets
+
 
 
   - Modify _payout_bets method to pass both winning position and color
@@ -115,20 +116,25 @@
   - Maintain compatibility with existing color-only bet processing
   - _Requirements: 2.4, 5.1, 5.3_
 
-- [-] 4.1 Update Table payout method signature
+- [x] 4.1 Update Table payout method signature
+
 
   - Modify _payout_bets method to get winning position from wheel
   - Pass both winning_position and winning_color to each bet's payout method
   - Update method calls to provide complete winning information
   - _Requirements: 2.4, 5.2_
 
-- [ ] 5. Add support for multiple bets per round
+- [-] 5. Add support for multiple bets per round
+
+
+
   - Implement multiple bet placement functionality
   - Update game flow to handle multiple bets of different types
   - Enhance result display to show outcomes for each bet
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 5.1 Implement multiple bet placement
+- [-] 5.1 Implement multiple bet placement
+
   - Add handle_multiple_bets method to GameController
   - Allow players to place additional bets after first bet
   - Validate total bet amounts don't exceed player balance
