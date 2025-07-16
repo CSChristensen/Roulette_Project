@@ -158,6 +158,7 @@
 
 
 
+
   - Implement unit tests for BetType enum and enhanced Bet class
   - Test number input validation with edge cases
   - Test payout calculations for number bets
@@ -190,15 +191,26 @@
   - Verify balance updates with complex bet combinations
   - Test game flow with various betting scenarios
   - _Requirements: 5.5_
+-
 
-- [ ] 7. Update main game entry point and documentation
+- [x] 7. Update main game entry point and documentation
+
+
+
+
+
+
+
+
 
   - Ensure main.py works with enhanced GameController
   - Update any documentation or help text
   - Verify backward compatibility with existing functionality
   - _Requirements: 5.3_
 
-- [ ] 7.1 Verify main entry point compatibility
+- [x] 7.1 Verify main entry point compatibility
+
+
   - Test main.py with enhanced GameController
   - Ensure existing game flow continues to work
   - Verify new features are accessible through main interface
